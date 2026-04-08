@@ -43,7 +43,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 @media(max-width:600px){#reader{padding:60px 24px 90px}}
 #doc-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.3em;color:#2a2a2a;margin-bottom:56px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:16px}
 .para{margin-bottom:1.5em;line-height:1.9;font-size:14px;color:#fff;font-family:'adobe-myungjo-std',serif}
-.spk-row{display:grid;grid-template-columns:80px 1fr;gap:0 16px;margin-top:2em;align-items:start}.spk-row .spk{margin-top:0;padding-top:2px}.spk-row .para{margin-top:0}.spk{font-family:'adobe-myungjo-std',serif;font-size:14px;letter-spacing:0;color:#666;display:block;margin-top:2em;margin-bottom:2px}
+.spk-row{display:grid;grid-template-columns:80px 1fr;gap:0 16px;margin-top:2em;align-items:start}.spk-row .para{margin-top:0}.spk{font-family:'adobe-myungjo-std',serif;font-size:14px;color:#666;display:block;padding-top:2px}
 .ch{display:inline}
 
 
@@ -228,21 +228,30 @@ function buildText() {
       const row = document.createElement('div');
       row.className = 'spk-row';
       const sp = document.createElement('span');
-      sp.className = 'spk'; sp.textContent = b.s;
+      sp.className = 'spk';
+      sp.textContent = b.s;
       row.appendChild(sp);
       const p = document.createElement('p');
       p.className = 'para';
-    [...b.t].forEach(ch => {
-      const s = document.createElement('span');
-      s.className = 'ch'; s.textContent = ch;
-      p.appendChild(s);
-      chars.push({el:s, op:1, gone:false});
-    });
-    p.appendChild(document.createTextNode(' '));
-    if (b.s) {
+      [...b.t].forEach(ch => {
+        const s = document.createElement('span');
+        s.className = 'ch'; s.textContent = ch;
+        p.appendChild(s);
+        chars.push({el:s, op:1, gone:false});
+      });
+      p.appendChild(document.createTextNode(' '));
       row.appendChild(p);
       c.appendChild(row);
     } else {
+      const p = document.createElement('p');
+      p.className = 'para';
+      [...b.t].forEach(ch => {
+        const s = document.createElement('span');
+        s.className = 'ch'; s.textContent = ch;
+        p.appendChild(s);
+        chars.push({el:s, op:1, gone:false});
+      });
+      p.appendChild(document.createTextNode(' '));
       c.appendChild(p);
     }
   });
