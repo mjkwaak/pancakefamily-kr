@@ -11,7 +11,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 
 /* 시작 화면 */
 #scr-start{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;z-index:100;padding:2rem}
-#scr-start .title{font-family:'adobe-myungjo-std',serif;font-size:26px;letter-spacing:-0.02em;font-weight:400;color:#fff;display:flex;flex-direction:column;align-items:center;line-height:1.0;text-align:center;white-space:nowrap}
+#scr-start .title{font-family:'adobe-myungjo-std',serif;font-size:26px;letter-spacing:-0.05em;font-weight:400;color:#fff;display:flex;flex-direction:column;align-items:center;line-height:1.0;text-align:center;white-space:nowrap}
 #scr-start .warn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c84b1e;letter-spacing:0.08em;text-align:center}
 #scr-start .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#555;letter-spacing:0.08em;text-align:center;line-height:1.9}
 .btn{background:transparent;border:1px solid #333;color:#888;padding:13px 40px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.25em;cursor:pointer;text-transform:uppercase;transition:border-color .3s,color .3s}
@@ -21,7 +21,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 
 /* 보정 화면 */
 #scr-cal{position:fixed;inset:0;background:#000;display:none;z-index:100}
-#cal-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:#444;letter-spacing:0.2em;text-align:center;line-height:2;pointer-events:none}
+#cal-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;letter-spacing:0.2em;text-align:center;line-height:2;pointer-events:none}
 .cdot{position:absolute;width:22px;height:22px;border-radius:50%;background:#c84b1e;transform:translate(-50%,-50%);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;box-shadow:0 0 0 7px rgba(200,75,30,.18);transition:opacity .3s}
 .cdot.off{opacity:.2;pointer-events:none}
 .cdot.done{opacity:.1;pointer-events:none}
@@ -42,8 +42,8 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 #reader{display:none;max-width:640px;margin:0 auto;padding:80px 40px 100px}
 @media(max-width:600px){#reader{padding:60px 24px 90px}}
 #doc-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.3em;color:#2a2a2a;margin-bottom:56px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:16px}
-.para{margin-bottom:1.5em;line-height:1.9;font-size:14px;color:#fff;font-family:'adobe-myungjo-std',serif}
-.spk{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.25em;color:#2a2a2a;text-transform:uppercase;display:block;margin-bottom:6px;margin-top:2em}
+.has-spk{margin-top:0}.para{margin-bottom:1.5em;line-height:1.9;font-size:14px;color:#fff;font-family:'adobe-myungjo-std',serif}
+.spk{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.12em;color:#444;text-transform:uppercase;display:block;margin-top:2.2em;margin-bottom:0;padding-bottom:4px;border-bottom:1px solid #222}
 .ch{display:inline}
 
 #mouse-note{display:none;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#887755;background:#1a1500;border:1px solid #2a2000;border-radius:2px;padding:10px 16px;margin-bottom:32px;line-height:1.7}
@@ -68,7 +68,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 
 <!-- 보정 -->
 <div id="scr-cal">
-  <div id="cal-label">빨간 점을 순서대로 응시하며 클릭하세요<br><span style="font-size:10px;opacity:.4">9개 완료 시 자동 시작</span></div>
+  <div id="cal-label">빨간 점을 순서대로 응시하며 클릭하세요<br></div>
 </div>
 
 <!-- 웹캠 -->
@@ -81,8 +81,8 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 <div id="sbar"><span id="sbar-l">—</span><span id="sbar-r">0% 소멸됨</span></div>
 
 <div id="reader">
-  <div id="mouse-note">마우스 모드 — 커서가 닿은 글자가 사라집니다.</div>
-  <p id="doc-label">심문 기록 · 홉슨 밀게이트 형사 진술</p>
+  <div id="mouse-note"></div>
+  
   <div id="txt"></div>
 </div>
 
@@ -204,8 +204,11 @@ const sbarL  = document.getElementById('sbar-l');
 
 let gx = -999, gy = -999;   // 현재 시선 화면 좌표
 let chars = [], total = 0;
-const RADIUS = 55;
-const FADE   = 0.2;
+// 모바일/데스크탑 분기
+const IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+const RADIUS = IS_MOBILE ? 30 : 40;   // 모바일은 반경 약간 크게
+const FADE   = IS_MOBILE ? 0.2 : 0.2; // 모바일은 소멸 약간 빠르게
 let rafId, lastTs = 0;
 
 /* ── 시선 점 이동 (단일 함수로 통합) ── */
@@ -223,11 +226,11 @@ function buildText() {
   RAW.forEach(b => {
     if (b.s) {
       const sp = document.createElement('span');
-      sp.className = 'spk'; sp.textContent = b.s + ' :';
+      sp.className = 'spk'; sp.textContent = b.s;
       c.appendChild(sp);
     }
     const p = document.createElement('p');
-    p.className = 'para';
+    p.className = 'para' + (b.s ? ' has-spk' : '');
     [...b.t].forEach(ch => {
       const s = document.createElement('span');
       s.className = 'ch'; s.textContent = ch;
@@ -243,8 +246,8 @@ function buildText() {
 /* ── 프레임 루프 ── */
 function tick(ts) {
   rafId = requestAnimationFrame(tick);
-  if (ts - lastTs < 14) return;
-  lastTs = ts;
+  // FPS 캡 제거 — rAF가 디스플레이 주사율에 자동 동기화
+  // 글자 소멸 연산만 담당 (시선 좌표는 FaceMesh onResults에서 별도 업데이트)
   let dirty = false;
   chars.forEach(c => {
     if (c.gone) return;
@@ -297,19 +300,22 @@ function startReader(mouseMode) {
 let faceMesh, cam;
 // 평활화 — 가중 이동평균
 const buf = [];
-const BUF_N = 8;
+// 모바일은 버퍼 작게(반응성↑), 데스크탑은 크게(안정성↑)
+const BUF_N = IS_MOBILE ? 5 : 8;
+
 function smooth(x, y) {
   buf.push({x, y});
   if (buf.length > BUF_N) buf.shift();
+  // 선형 가중치 — 제곱보다 부드럽게 추종
   let wx=0, wy=0, ws=0;
-  buf.forEach((p,i) => { const w=(i+1)*(i+1); wx+=p.x*w; wy+=p.y*w; ws+=w; });
+  buf.forEach((p,i) => { const w = i + 1; wx+=p.x*w; wy+=p.y*w; ws+=w; });
   return {x: wx/ws, y: wy/ws};
 }
 
 // 깜빡임 억제 — 깜빡임 감지 후 N프레임 동안 좌표 고정
 let blinkCooldown = 0;      // 남은 억제 프레임 수
-const BLINK_SUPPRESS = 6;   // 깜빡임 후 무시할 프레임 수
-const BLINK_THRESH   = 0.018; // 눈 개방도 임계값 (높을수록 민감)
+const BLINK_SUPPRESS = IS_MOBILE ? 4 : 6;
+const BLINK_THRESH   = IS_MOBILE ? 0.015 : 0.018;
 
 // 보정 데이터
 const cal = [];   // {rx, ry, sx, sy}
@@ -370,7 +376,7 @@ function startCam() {
   v.style.display = 'block';
   cam = new Camera(v, {
     onFrame: async () => { await faceMesh.send({image:v}); },
-    width:640, height:480,
+    width: IS_MOBILE ? 480 : 640, height: IS_MOBILE ? 360 : 480,
   });
   cam.start();
 }
