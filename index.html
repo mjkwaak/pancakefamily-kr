@@ -11,7 +11,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 
 /* 시작 화면 */
 #scr-start{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;z-index:100;padding:2rem}
-#scr-start .title{font-family:'adobe-myungjo-std',serif;font-size:26px;letter-spacing:0.04em;font-weight:400;color:#fff;display:flex;flex-direction:column;align-items:center;line-height:1.0;text-align:center;white-space:nowrap}
+#scr-start .title{font-family:'adobe-myungjo-std',serif;font-size:26px;letter-spacing:-0.02em;font-weight:400;color:#fff;display:flex;flex-direction:column;align-items:center;line-height:1.0;text-align:center;white-space:nowrap}
 #scr-start .warn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c84b1e;letter-spacing:0.08em;text-align:center}
 #scr-start .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#555;letter-spacing:0.08em;text-align:center;line-height:1.9}
 .btn{background:transparent;border:1px solid #333;color:#888;padding:13px 40px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.25em;cursor:pointer;text-transform:uppercase;transition:border-color .3s,color .3s}
@@ -42,7 +42,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 #reader{display:none;max-width:640px;margin:0 auto;padding:80px 40px 100px}
 @media(max-width:600px){#reader{padding:60px 24px 90px}}
 #doc-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.3em;color:#2a2a2a;margin-bottom:56px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:16px}
-.para{margin-bottom:1.5em;line-height:2.1;font-size:15px;color:#fff;font-family:'adobe-myungjo-std',serif}
+.para{margin-bottom:1.5em;line-height:1.9;font-size:14px;color:#fff;font-family:'adobe-myungjo-std',serif}
 .spk{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.25em;color:#2a2a2a;text-transform:uppercase;display:block;margin-bottom:6px;margin-top:2em}
 .ch{display:inline}
 
@@ -61,7 +61,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 <div id="scr-start">
   <div class="title"><span>팬케이크</span><span>가족</span></div>
   <p class="warn">⚠ 웹캠 접근 권한이 필요합니다</p>
-  <p class="sub">허용 후 9개의 점을 순서대로 바라보며 클릭하세요.<br>보정이 끝나면 시선이 닿은 글자가 사라집니다.</p>
+  
   <button class="btn" id="btn-start">웹캠으로 시작</button>
   <span class="lnk" id="btn-mouse">마우스 모드로 체험하기</span>
 </div>
