@@ -42,11 +42,11 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 #reader{display:none;max-width:640px;margin:0 auto;padding:80px 40px 100px}
 @media(max-width:600px){#reader{padding:60px 24px 90px}}
 #doc-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.3em;color:#2a2a2a;margin-bottom:56px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:16px}
-.has-spk{margin-top:0}.para{margin-bottom:1.5em;line-height:1.9;font-size:14px;color:#fff;font-family:'adobe-myungjo-std',serif}
-.spk{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.12em;color:#444;text-transform:uppercase;display:block;margin-top:2.2em;margin-bottom:0;padding-bottom:4px;border-bottom:1px solid #222}
+.para{margin-bottom:1.5em;line-height:1.9;font-size:14px;color:#fff;font-family:'adobe-myungjo-std',serif}
+.spk-row{display:grid;grid-template-columns:80px 1fr;gap:0 16px;margin-top:2em;align-items:start}.spk-row .spk{margin-top:0;padding-top:2px}.spk-row .para{margin-top:0}.spk{font-family:'adobe-myungjo-std',serif;font-size:14px;letter-spacing:0;color:#666;display:block;margin-top:2em;margin-bottom:2px}
 .ch{display:inline}
 
-#mouse-note{display:none;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#887755;background:#1a1500;border:1px solid #2a2000;border-radius:2px;padding:10px 16px;margin-bottom:32px;line-height:1.7}
+
 
 /* 완료 */
 #scr-done{display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem}
@@ -68,7 +68,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 
 <!-- 보정 -->
 <div id="scr-cal">
-  <div id="cal-label">빨간 점을 순서대로 응시하며 클릭하세요<br></div>
+  <div id="cal-label">빨간 점을 순서대로 응시하며 클릭하세요</div>
 </div>
 
 <!-- 웹캠 -->
@@ -81,7 +81,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 <div id="sbar"><span id="sbar-l">—</span><span id="sbar-r">0% 소멸됨</span></div>
 
 <div id="reader">
-  <div id="mouse-note"></div>
+  
   
   <div id="txt"></div>
 </div>
@@ -225,12 +225,13 @@ function buildText() {
   c.innerHTML = ''; chars = [];
   RAW.forEach(b => {
     if (b.s) {
+      const row = document.createElement('div');
+      row.className = 'spk-row';
       const sp = document.createElement('span');
       sp.className = 'spk'; sp.textContent = b.s;
-      c.appendChild(sp);
-    }
-    const p = document.createElement('p');
-    p.className = 'para' + (b.s ? ' has-spk' : '');
+      row.appendChild(sp);
+      const p = document.createElement('p');
+      p.className = 'para';
     [...b.t].forEach(ch => {
       const s = document.createElement('span');
       s.className = 'ch'; s.textContent = ch;
@@ -238,7 +239,12 @@ function buildText() {
       chars.push({el:s, op:1, gone:false});
     });
     p.appendChild(document.createTextNode(' '));
-    c.appendChild(p);
+    if (b.s) {
+      row.appendChild(p);
+      c.appendChild(row);
+    } else {
+      c.appendChild(p);
+    }
   });
   total = chars.length;
 }
@@ -281,7 +287,7 @@ function startReader(mouseMode) {
   document.getElementById('sbar').style.display      = 'flex';
 
   if (mouseMode) {
-    document.getElementById('mouse-note').style.display = 'block';
+    
     sbarL.textContent = '마우스 모드';
     dotEl.style.background = 'rgba(120,160,255,.7)';
     dotEl.style.visibility = 'visible';
@@ -396,6 +402,19 @@ function calPositions() {
   ];
 }
 
+// 창 크기 변경 시 보정 데이터 비율 재계산
+window.addEventListener('resize', () => {
+  if (cal.length === 0) return;
+  const W = window.innerWidth, H = window.innerHeight;
+  cal.forEach(p => {
+    // 저장된 비율로 sx/sy 재계산
+    if (p.rx_ratio !== undefined) {
+      p.sx = p.rx_ratio * W;
+      p.sy = p.ry_ratio * H;
+    }
+  });
+});
+
 let calIdx=0, calDots=[];
 function setupCalDots() {
   const scr = document.getElementById('scr-cal');
@@ -411,7 +430,11 @@ function setupCalDots() {
       const sl = buf.slice(-n);
       const avgRX = sl.reduce((a,p)=>a+p.x,0)/n || lastRaw.x;
       const avgRY = sl.reduce((a,p)=>a+p.y,0)/n || lastRaw.y;
-      cal.push({rx:avgRX, ry:avgRY, sx, sy});
+      cal.push({
+        rx:avgRX, ry:avgRY, sx, sy,
+        rx_ratio: sx / window.innerWidth,   // 창 비율 저장
+        ry_ratio: sy / window.innerHeight,
+      });
       d.classList.add('done');
       calIdx++;
       if (calIdx<pos.length) {
