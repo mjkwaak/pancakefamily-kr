@@ -27,7 +27,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 .cdot.done{opacity:.1;pointer-events:none}
 
 /* 웹캠 (처리용) */
-#vid{position:fixed;bottom:12px;right:12px;width:120px;height:80px;border-radius:4px;object-fit:cover;opacity:.3;z-index:50;display:none;transform:scaleX(-1)}
+#vid{display:none!important}
 
 /* 시선 점 — 항상 DOM에 있고 visibility로 제어 */
 #dot{position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(200,75,30,.8);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);visibility:hidden;left:-50px;top:-50px}
@@ -42,7 +42,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 #reader{display:none;max-width:720px;margin:0 auto;padding:80px 40px 100px}
 @media(max-width:600px){#reader{padding:60px 16px 90px}#btn-mouse{display:none}}
 #doc-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.3em;color:#2a2a2a;margin-bottom:56px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:16px}
-.para{margin-bottom:1.6em;line-height:1.9;font-size:14px;color:#fff;font-family:'adobe-myungjo-std',serif;word-break:keep-all}
+.para{margin-bottom:1.4em;line-height:1.9;font-size:14px;color:#fff;font-family:'adobe-myungjo-std',serif;word-break:keep-all}
 #txt{display:flex;flex-direction:column}.spk{font-family:'adobe-myungjo-std',serif;font-size:14px;color:#555;display:block;text-align:left;padding-right:0;align-self:start;margin-top:0;}.para{margin-bottom:1.2em}
 .ch{display:inline}
 
@@ -52,7 +52,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
 #scr-done{display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem}
 #scr-done p{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#555;letter-spacing:0.2em;text-align:center;line-height:2}
 #scr-done .big{font-size:13px;color:#444}
-.spk-row{display:grid;grid-template-columns:72px 1fr;column-gap:24px;margin-top:0;margin-bottom:1.6em;align-items:start}.spk{font-family:'adobe-myungjo-std',serif;font-size:14px;color:#555;line-height:inherit;padding-top:6px;text-align:left;white-space:nowrap}.spk-row .para{margin-top:0;margin-bottom:0}.para.no-spk{margin-left:96px}@media(max-width:600px){.para{text-align:justify;word-break:keep-all}.para.no-spk{text-align:justify}.spk-row .para{text-align:justify}}</style>
+.spk-row{display:grid;grid-template-columns:72px 1fr;column-gap:24px;margin-top:0;margin-bottom:1.4em;align-items:start}.spk{font-family:'adobe-myungjo-std',serif;font-size:14px;color:#555;line-height:inherit;padding-top:6px;text-align:left;white-space:nowrap}.spk-row .para{margin-top:0;margin-bottom:0}.para.no-spk{margin-left:96px}</style>
 <script>(function(d){var config={kitId:"ywo8vka",scriptTimeout:3000,async:true},h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src="https://use.typekit.net/"+config.kitId+".js";tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)})(document);</script>
 </head>
 <body>
@@ -62,7 +62,7 @@ html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-h
   <div class="title"><span>팬케이크</span><span>가족</span></div>
   <p class="warn">⚠ 웹캠 접근 권한이 필요합니다</p>
   
-  <button class="btn" id="btn-start">웹캠으로 시작</button>
+  <button class="btn" id="btn-start">읽기</button>
   <span class="lnk" id="btn-mouse">마우스 모드로 체험하기</span>
 </div>
 
