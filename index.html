@@ -10,7 +10,7 @@
 html,body{background:#000;color:#fff;font-family:'adobe-myungjo-std',serif;min-height:100vh;overflow-x:hidden}
 
 /* 시작 화면 */
-#scr-start{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;z-index:100;padding:2rem}
+#scr-start{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2rem;z-index:100;padding:80px 40px 40px}
 #scr-start .title{font-family:'adobe-myungjo-std',serif;font-size:26px;letter-spacing:-0.05em;font-weight:400;color:#fff;display:flex;flex-direction:column;align-items:center;line-height:1.0;text-align:center;white-space:nowrap}
 #scr-start .warn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c84b1e;letter-spacing:0.08em;text-align:center}
 #scr-start .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#555;letter-spacing:0.08em;text-align:center;line-height:1.9}
@@ -395,16 +395,40 @@ function initFaceMesh() {
       const rOpen = Math.abs(rB.y - rT.y);
       const avgOpen = (lOpen + rOpen) / 2;
       if (avgOpen < BLINK_THRESH) {
-        // 깜빡임 감지 → 쿨다운 리셋하고 이번 프레임 무시
         blinkCooldown = BLINK_SUPPRESS;
         return;
       }
     }
-    // 쿨다운 중이면 좌표 업데이트 안 함 (점 제자리 유지)
     if (blinkCooldown > 0) { blinkCooldown--; return; }
-    // iris 평균 → 미러 반전
-    const rx = 1-(lI.x+rI.x)/2;
-    const ry = (lI.y+rI.y)/2;
+
+    // iris 기본 좌표
+    const rx_iris = 1-(lI.x+rI.x)/2;
+    const ry_iris = (lI.y+rI.y)/2;
+
+    let rx, ry;
+    if (IS_MOBILE) {
+      // 모바일: 얼굴 방향(head pose) 반영
+      // 코 끝(1)과 눈 중심으로 고개 기울기 추정
+      const nose = lm[1];
+      const eyeMidX = (lI.x + rI.x) / 2;
+      const eyeMidY = (lI.y + rI.y) / 2;
+      // 코-눈 벡터로 머리 회전 오프셋 계산
+      const headOffsetX = (nose.x - eyeMidX) * 2.5;
+      const headOffsetY = (nose.y - eyeMidY) * 1.8;
+      // 눈 코너 대비 iris 상대 위치
+      const lInner=lm[133], lOuter=lm[33];
+      const rInner=lm[362], rOuter=lm[263];
+      const lEyeW = Math.abs(lOuter.x - lInner.x) || 0.01;
+      const rEyeW = Math.abs(rOuter.x - rInner.x) || 0.01;
+      const irisRatioX = 1 - ((lI.x-lInner.x)/lEyeW + (rI.x-rInner.x)/rEyeW) / 2;
+      // iris 비율 50% + iris 절대 30% + 머리방향 20%
+      rx = irisRatioX * 0.5 + rx_iris * 0.3 + (1 - (eyeMidX + headOffsetX)) * 0.2;
+      ry = ry_iris * 0.8 + (eyeMidY + headOffsetY) * 0.2;
+    } else {
+      rx = rx_iris;
+      ry = ry_iris;
+    }
+
     lastRaw = {x:rx, y:ry};
     const sm = smooth(rx, ry);
     const mp = mapGaze(sm.x, sm.y);
